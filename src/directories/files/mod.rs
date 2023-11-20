@@ -1,10 +1,12 @@
 pub mod file {
     use std::{
         ffi::OsString,
-        fs::{DirEntry, FileType, Permissions},
+        fs::{self, DirEntry, FileType, Metadata, Permissions},
         path::PathBuf,
         time::SystemTime,
     };
+
+    use opener::OpenError;
 
     pub struct File {
         name: OsString,
@@ -14,7 +16,7 @@ pub mod file {
         is_file: bool,
         is_symlink: bool,
         length: u64,
-        permission: Permissions,
+        permissions: Permissions,
         modified: SystemTime,
         accessed: SystemTime,
         created: SystemTime,
@@ -29,7 +31,7 @@ pub mod file {
             let is_file = f.metadata().unwrap().is_file();
             let is_symlink = f.metadata().unwrap().is_symlink();
             let length = f.metadata().unwrap().len();
-            let permission = f.metadata().unwrap().permissions();
+            let permissions = f.metadata().unwrap().permissions();
             let modified = f.metadata().unwrap().modified().unwrap();
             let accessed = f.metadata().unwrap().accessed().unwrap();
             let created = f.metadata().unwrap().created().unwrap();
@@ -45,8 +47,50 @@ pub mod file {
                 created,
                 modified,
                 length,
-                permission,
+                permissions,
             }
+        }
+
+        fn parse_metadata(&mut self, metadata: Metadata) {
+            self.set_is_dir(metadata.is_dir());
+            self.set_is_file(metadata.is_file());
+            self.set_is_symlink(metadata.is_symlink());
+            self.set_length(metadata.len());
+            self.set_permissions(metadata.permissions());
+            self.set_modified(metadata.modified().unwrap());
+            self.set_accessed(metadata.accessed().unwrap());
+            self.set_created(metadata.created().unwrap());
+        }
+
+        fn set_accessed(&mut self, system_time: SystemTime) {
+            self.accessed = system_time
+        }
+        fn set_created(&mut self, system_time: SystemTime) {
+            self.created = system_time
+        }
+
+        fn set_modified(&mut self, system_time: SystemTime) {
+            self.modified = system_time
+        }
+
+        fn set_permissions(&mut self, permissions: Permissions) {
+            self.permissions = permissions
+        }
+
+        fn set_length(&mut self, length: u64) {
+            self.length = length
+        }
+
+        fn set_is_symlink(&mut self, is_symlink: bool) {
+            self.is_symlink = is_symlink;
+        }
+
+        fn set_is_file(&mut self, is_file: bool) {
+            self.is_file = is_file;
+        }
+
+        fn set_is_dir(&mut self, is_dir: bool) {
+            self.is_dir = is_dir;
         }
 
         pub fn get_name(&self) -> &OsString {
@@ -78,7 +122,7 @@ pub mod file {
         }
 
         pub fn get_permission(&self) -> &Permissions {
-            &self.permission
+            &self.permissions
         }
 
         pub fn get_modified_time(&self) -> &SystemTime {
@@ -93,13 +137,9 @@ pub mod file {
             &self.created
         }
 
-        pub fn open(&self) {
-            let file_opened = opener::open(self.get_path());
-
-            match file_opened {
-                Ok(()) => println!("File opened successfully"),
-                Err(e) => println!("Could not open the file {e}"),
-            }
+        pub fn open(&self) -> Result<(), OpenError> {
+            opener::open(self.get_path())?;
+            Ok(())
         }
     }
 }
