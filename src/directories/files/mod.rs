@@ -2,6 +2,7 @@ pub mod file {
     use std::{
         ffi::OsString,
         fs::{self, DirEntry, FileType, Metadata, Permissions},
+        io::Error,
         path::PathBuf,
         time::SystemTime,
     };
@@ -27,6 +28,7 @@ pub mod file {
             let name = f.file_name();
             let path = f.path();
             let file_type = f.file_type().unwrap();
+
             let is_dir = f.metadata().unwrap().is_dir();
             let is_file = f.metadata().unwrap().is_file();
             let is_symlink = f.metadata().unwrap().is_symlink();
@@ -60,6 +62,14 @@ pub mod file {
             self.set_modified(metadata.modified().unwrap());
             self.set_accessed(metadata.accessed().unwrap());
             self.set_created(metadata.created().unwrap());
+        }
+
+        fn set_path(&mut self, path: PathBuf) {
+            self.path = path
+        }
+
+        fn set_name(&mut self, name: OsString) {
+            self.name = name
         }
 
         fn set_accessed(&mut self, system_time: SystemTime) {
@@ -140,6 +150,21 @@ pub mod file {
         pub fn open(&self) -> Result<(), OpenError> {
             opener::open(self.get_path())?;
             Ok(())
+        }
+
+        pub fn update_metadata(&mut self) {
+            fs::symlink_metadata(&mut self.path);
+        }
+
+        pub fn rename_file(&mut self, new_name: OsString) {
+            match fs::rename(self.get_path(), &new_name) {
+                Ok(()) => {
+                    self.set_name(new_name);
+                }
+                Err(e) => {
+                    println!("Could not rename the file: {e}")
+                }
+            }
         }
     }
 }

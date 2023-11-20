@@ -54,6 +54,33 @@ pub mod directory {
             }
             file_paths
         }
+
+        pub fn remove_file(&mut self, file: File) -> Result<(), Error> {
+            match fs::remove_file(file.get_path()) {
+                Ok(()) => {
+                    self.files.retain(|f| f.get_name() != file.get_name());
+                    Ok(())
+                }
+                Err(e) => return Err(e),
+            }
+        }
+
+        pub fn remove_directory(&mut self, directory: File) -> Result<(), Error> {
+            match fs::remove_dir_all(directory.get_path()) {
+                Ok(()) => {
+                    self.files.retain(|f| f.get_name() != directory.get_name());
+                    Ok(())
+                }
+                Err(e) => {
+                    println!("Could not rename the file: {e}");
+                    Err(e)
+                }
+            }
+        }
+
+        pub fn copy_file(&mut self, source: File, dest: String) -> Result<u64, Error> {
+            fs::copy(source.get_path(), dest)
+        }
     }
 
     fn load_directories(path: &str) -> Result<Vec<DirEntry>, Error> {
