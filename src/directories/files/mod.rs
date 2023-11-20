@@ -92,5 +92,14 @@ pub mod file {
         pub fn get_created_time(&self) -> &SystemTime {
             &self.created
         }
+
+        pub fn open(&self) {
+            let file_opened = opener::open(self.get_path());
+
+            match file_opened {
+                Ok(()) => println!("File opened successfully"),
+                Err(e) => println!("Could not open the file {e}"),
+            }
+        }
     }
 }

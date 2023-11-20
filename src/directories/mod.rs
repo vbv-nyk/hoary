@@ -26,7 +26,7 @@ pub mod directory {
             };
         }
 
-        fn get_files(&self) -> &Vec<File> {
+        pub fn get_files(&self) -> &Vec<File> {
             &self.files
         }
 
