@@ -55,20 +55,20 @@ pub mod directory {
             file_paths
         }
 
-        pub fn remove_file(&mut self, file: File) -> Result<(), Error> {
-            match fs::remove_file(file.get_path()) {
+        pub fn remove_file(&mut self, source: &OsString) -> Result<(), Error> {
+            match fs::remove_file(source) {
                 Ok(()) => {
-                    self.files.retain(|f| f.get_name() != file.get_name());
+                    self.files.retain(|f| f.get_name() != source);
                     Ok(())
                 }
                 Err(e) => return Err(e),
             }
         }
 
-        pub fn remove_directory(&mut self, directory: File) -> Result<(), Error> {
-            match fs::remove_dir_all(directory.get_path()) {
+        pub fn remove_directory(&mut self, directory: &OsString) -> Result<(), Error> {
+            match fs::remove_dir_all(directory) {
                 Ok(()) => {
-                    self.files.retain(|f| f.get_name() != directory.get_name());
+                    self.files.retain(|f| f.get_name() != directory);
                     Ok(())
                 }
                 Err(e) => {
@@ -78,8 +78,8 @@ pub mod directory {
             }
         }
 
-        pub fn copy_file(&mut self, source: File, dest: String) -> Result<u64, Error> {
-            fs::copy(source.get_path(), dest)
+        pub fn copy(&self, source: &PathBuf, dest: &PathBuf) -> Result<u64, Error> {
+            fs::copy(source, dest)
         }
     }
 
