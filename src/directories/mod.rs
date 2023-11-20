@@ -10,7 +10,7 @@ pub mod directory {
     use super::files::file::File;
 
     pub struct Directory {
-        pub files: Vec<File>,
+        files: Vec<File>,
     }
 
     impl Directory {
@@ -24,6 +24,10 @@ pub mod directory {
                 }
                 Err(e) => panic!("Couldn't open the files and the directories because {e}"),
             };
+        }
+
+        fn get_files(&self) -> &Vec<File> {
+            &self.files
         }
 
         pub fn get_file_names(&self) -> Vec<OsString> {
