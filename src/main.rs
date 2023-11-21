@@ -5,9 +5,9 @@ use std::{
     path::PathBuf,
 };
 
-use directories::directory::Directory;
+use directory::{directory::Directory, file::file::OpenOperation};
 
-mod directories;
+mod directory;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Ok(())

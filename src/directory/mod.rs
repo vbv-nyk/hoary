@@ -1,4 +1,4 @@
-mod files;
+pub mod file;
 pub mod directory {
     use std::{
         ffi::OsString,
@@ -7,7 +7,7 @@ pub mod directory {
         path::PathBuf,
     };
 
-    use super::files::file::File;
+    use super::file::file::File;
 
     pub struct Directory {
         files: Vec<File>,
@@ -25,7 +25,6 @@ pub mod directory {
                 Err(e) => panic!("Couldn't open the files and the directories because {e}"),
             };
         }
-
         pub fn get_files(&self) -> &Vec<File> {
             &self.files
         }

@@ -2,12 +2,14 @@ pub mod file {
     use std::{
         ffi::OsString,
         fs::{self, DirEntry, FileType, Metadata, Permissions},
-        io::Error,
-        path::PathBuf,
+        path::{Path, PathBuf},
         time::SystemTime,
     };
 
-    use opener::OpenError;
+    pub enum OpenOperation<'a> {
+        FILEOPEN,
+        DIROPEN(&'a PathBuf),
+    }
 
     pub struct File {
         name: OsString,
@@ -147,9 +149,13 @@ pub mod file {
             &self.created
         }
 
-        pub fn open(&self) -> Result<(), OpenError> {
-            opener::open(self.get_path())?;
-            Ok(())
+        pub fn open(&self) -> OpenOperation {
+            if self.is_file() {
+                opener::open(self.get_path());
+                OpenOperation::FILEOPEN
+            } else {
+                OpenOperation::DIROPEN(self.get_path())
+            }
         }
 
         pub fn update_metadata(&mut self) {
