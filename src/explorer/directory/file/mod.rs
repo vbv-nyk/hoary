@@ -2,7 +2,7 @@ pub mod file {
     use std::{
         ffi::OsString,
         fs::{self, DirEntry, FileType, Metadata, Permissions},
-        path::{Path, PathBuf},
+        path::PathBuf,
         time::SystemTime,
     };
 

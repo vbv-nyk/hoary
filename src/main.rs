@@ -1,14 +1,42 @@
-use std::{
-    error::Error,
-    ffi::{OsStr, OsString},
-    fs,
-    path::PathBuf,
+use crossterm::{
+    event::{self, KeyCode, KeyEventKind},
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    ExecutableCommand,
 };
+use ratatui::{
+    prelude::{CrosstermBackend, Stylize, Terminal},
+    widgets::Paragraph,
+};
+use std::io;
+use std::io::{stdout, Result};
 
-use directory::{directory::Directory, file::file::OpenOperation};
+fn main() -> Result<()> {
+    stdout().execute(EnterAlternateScreen)?;
+    enable_raw_mode()?;
+    let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
+    terminal.clear()?;
 
-mod directory;
+    // TODO main loop
+    loop {
+        terminal.draw(|frame| {
+            let area = frame.size();
+            frame.render_widget(
+                Paragraph::new("Hello Ratatui! (press 'q' to quit)")
+                    .white()
+                    .on_blue(),
+                area,
+            );
+        })?;
+        if event::poll(std::time::Duration::from_millis(16))? {
+            if let event::Event::Key(key) = event::read()? {
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('q') {
+                    break;
+                }
+            }
+        }
+    }
 
-fn main() -> Result<(), Box<dyn Error>> {
+    stdout().execute(LeaveAlternateScreen)?;
+    disable_raw_mode()?;
     Ok(())
 }

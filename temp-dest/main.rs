@@ -1,10 +1,19 @@
-use std::{fs, io};
+use std::{
+    error::Error,
+    ffi::{OsStr, OsString},
+    fs,
+    path::{Path, PathBuf},
+};
 
-fn main() {
-    let mut file_name: String = String::from(" ");
-    let result = fs::copy("./src/main.rs", "./temp-dest/main.rs");
-    match result {
-        Ok(res) => println!("Moves {res} bytes from the source to the destination"),
-        Err(e) => println!("The following error occurred {e}"),
-    }
+use directory::{directory::Directory, file::file::OpenOperation};
+
+mod directory;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let directory = Directory::new(Some("."));
+    directory.copy(
+        &PathBuf::from("./src/main.rs"),
+        &PathBuf::from("./temp-dest/main.rs"),
+    );
+    Ok(())
 }
