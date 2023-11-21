@@ -12,14 +12,14 @@ pub mod tui_controller {
         prelude::{CrosstermBackend, Stylize, Terminal},
         widgets::Paragraph,
     };
-    use std::io::{stdout, Result};
+    use std::io::{stdout, Result, Stdout};
 
-    pub fn startup() -> Result<()> {
+    pub fn startup() -> Result<(Terminal<CrosstermBackend<Stdout>>)> {
         stdout().execute(EnterAlternateScreen)?;
         enable_raw_mode()?;
         let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
         terminal.clear()?;
-        Ok(())
+        Ok((terminal))
     }
 
     pub fn end() -> Result<()> {
