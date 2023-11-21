@@ -1,13 +1,11 @@
-pub mod file;
-pub mod directory {
+pub mod directory_ops {
+    use crate::api::file_mod::file_ops::File;
     use std::{
         ffi::OsString,
         fs::{self, DirEntry},
         io::Error,
         path::PathBuf,
     };
-
-    use super::file::file::File;
 
     pub struct Directory {
         files: Vec<File>,
@@ -35,9 +33,7 @@ pub mod directory {
                 .iter()
                 .map(|file| file.get_name().clone())
                 .collect();
-            for (i, file_name) in file_names.iter().enumerate() {
-                println!("{i}: {:#?}", file_name);
-            }
+
             file_names
         }
 
@@ -48,9 +44,6 @@ pub mod directory {
                 .map(|file| file.get_path().clone())
                 .collect();
 
-            for (i, file_path) in file_paths.iter().enumerate() {
-                println!("{i}: {:#?}", file_path);
-            }
             file_paths
         }
 
