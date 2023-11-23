@@ -8,7 +8,7 @@ pub fn events(App: &mut App) -> Result<bool> {
     let mut quit = false;
     match state {
         States::NORMAL(active_tab) => {
-            if event::poll(std::time::Duration::from_millis(16))? {
+            if event::poll(std::time::Duration::from_millis(250))? {
                 if let event::Event::Key(key) = event::read()? {
                     if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('q') {
                         quit = true;

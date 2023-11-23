@@ -5,8 +5,9 @@ pub mod app_mod {
 
     use std::io::{stderr, stdout, Stderr, Stdout};
 
-    use crossterm::terminal::{
-        disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
+    use crossterm::{
+        event::{DisableMouseCapture, EnableMouseCapture},
+        terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     };
     use ratatui::{backend::CrosstermBackend, symbols::line::NORMAL, Terminal};
 
@@ -27,20 +28,20 @@ pub mod app_mod {
             directories.push(Directory::new(Some("."), 1));
             App {
                 directories,
-                state: States::NORMAL(1),
+                state: States::NORMAL(0),
             }
         }
 
         pub fn start(&self) -> Result<(TerminalType)> {
             enable_raw_mode()?;
-            crossterm::execute!(stdout(), EnterAlternateScreen)?;
+            crossterm::execute!(stdout(), EnterAlternateScreen, EnableMouseCapture)?;
             let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
             Ok((terminal))
         }
 
         pub fn end(&self) -> Result<()> {
             disable_raw_mode()?;
-            crossterm::execute!(stdout(), LeaveAlternateScreen)?;
+            crossterm::execute!(stdout(), LeaveAlternateScreen, DisableMouseCapture)?;
             Ok(())
         }
 
