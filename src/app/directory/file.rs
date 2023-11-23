@@ -1,4 +1,4 @@
-pub mod file_ops {
+pub mod file_mod {
     use std::{
         ffi::OsString,
         fs::{self, DirEntry, FileType, Metadata, Permissions},

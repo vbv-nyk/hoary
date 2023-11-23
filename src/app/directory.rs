@@ -1,5 +1,6 @@
-pub mod directory_ops {
-    use crate::api::file_mod::file_ops::File;
+pub mod file;
+
+pub mod directory_mod {
     use std::{
         ffi::OsString,
         fs::{self, DirEntry},
@@ -7,12 +8,14 @@ pub mod directory_ops {
         path::PathBuf,
     };
 
+    use super::file::file_mod::File;
+
     pub struct Directory {
         files: Vec<File>,
     }
 
     impl Directory {
-        pub fn new(path: Option<&str>) -> Directory {
+        pub fn new(path: Option<&str>, position: usize) -> Directory {
             let current_directory = load_directories(path.unwrap_or("."));
             match current_directory {
                 Ok(fnds) => {
