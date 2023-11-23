@@ -1,21 +1,30 @@
-use std::io::stderr;
+use std::io::{stderr, stdout};
 
+use app::app_mod::App;
 use crossterm::terminal::{
     self, disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
 };
 
 use anyhow::Result;
+use event::events;
 use ratatui::{backend::CrosstermBackend, Terminal};
+use ui::render;
 
 mod app;
 mod event;
 mod ui;
 fn main() -> Result<()> {
-    enable_raw_mode()?;
-    crossterm::execute!(stderr(), EnterAlternateScreen)?;
-    let mut terminal = Terminal::new(CrosstermBackend::new(stderr()));
-    crossterm::execute!(stderr(), LeaveAlternateScreen)?;
+    let mut app = App::new();
+    app.start()?;
+    let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
 
-    disable_raw_mode()?;
+    loop {
+        render(&mut app, &mut terminal)?;
+        let quit = events(&mut app)?;
+        if quit {
+            break;
+        }
+    }
+    app.end()?;
     Ok(())
 }

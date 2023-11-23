@@ -2,6 +2,7 @@ pub mod file;
 
 pub mod directory_mod {
     use std::{
+        env::current_dir,
         ffi::OsString,
         fs::{self, DirEntry},
         io::Error,
@@ -11,21 +12,32 @@ pub mod directory_mod {
     use super::file::file_mod::File;
 
     pub struct Directory {
+        name: String,
         files: Vec<File>,
     }
 
     impl Directory {
         pub fn new(path: Option<&str>, position: usize) -> Directory {
             let current_directory = load_directories(path.unwrap_or("."));
+            let mut current_directory_name = current_dir().unwrap();
+            current_directory_name.pop();
+            let current_directory_name = current_directory_name.file_name().unwrap().to_os_string();
+
             match current_directory {
                 Ok(fnds) => {
                     return Directory {
+                        name: current_directory_name.into_string().unwrap(),
                         files: load_files(&fnds),
                     }
                 }
                 Err(e) => panic!("Couldn't open the files and the directories because {e}"),
             };
         }
+
+        pub fn get_directory_name(&self) -> &String {
+            &self.name
+        }
+
         pub fn get_files(&self) -> &Vec<File> {
             &self.files
         }
