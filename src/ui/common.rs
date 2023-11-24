@@ -1,3 +1,5 @@
+use std::os::fd;
+
 use ratatui::widgets::List;
 use ratatui::widgets::ListItem;
 use ratatui::widgets::Tabs;
@@ -16,18 +18,33 @@ pub fn directory_tabs(app: &App) -> Tabs<'_> {
     tabs
 }
 
-pub fn fnds_list_view(app: &App) -> List<'_> {
+pub fn ds_list_view(app: &App) -> List<'_> {
     let mut fnds: Vec<ListItem> = vec![];
     if let States::NORMAL(tab) = app.get_state() {
         let index = usize::try_from(*tab).unwrap();
-        fnds = app
-            .get_directories()
-            .get(index)
-            .unwrap()
-            .get_file_names()
-            .iter()
-            .map(|f| ListItem::new(f.clone()))
-            .collect();
+        let current_directory = app.get_directories().get(index).unwrap();
+        let dirs = current_directory.get_only_dirs();
+        // let files = current_directory.get_only_files();
+        let dirs: Vec<ListItem> = dirs.iter().map(|f| ListItem::new(f.clone())).collect();
+        // let files: Vec<ListItem> = files.iter().map(|f| ListItem::new(f.clone())).collect();
+        fnds.extend(dirs);
+        // fnds.extend(files);
+    }
+    let fnds = List::new(fnds);
+    fnds
+}
+
+pub fn fs_list_view(app: &App) -> List<'_> {
+    let mut fnds: Vec<ListItem> = vec![];
+    if let States::NORMAL(tab) = app.get_state() {
+        let index = usize::try_from(*tab).unwrap();
+        let current_directory = app.get_directories().get(index).unwrap();
+        // let dirs = current_directory.get_only_dirs();
+        let files = current_directory.get_only_files();
+        // let dirs: Vec<ListItem> = dirs.iter().map(|f| ListItem::new(f.clone())).collect();
+        let files: Vec<ListItem> = files.iter().map(|f| ListItem::new(f.clone())).collect();
+        // fnds.extend(dirs);
+        fnds.extend(files);
     }
     let fnds = List::new(fnds);
     fnds
