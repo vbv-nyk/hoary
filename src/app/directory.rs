@@ -59,17 +59,19 @@ pub mod directory_mod {
                     dirs.push(f.get_name().clone().into_string().unwrap());
                 }
             });
+            dirs.sort();
             dirs
         }
 
         pub fn get_only_files(&self) -> Vec<String> {
-            let mut dirs = vec![];
+            let mut files = vec![];
             self.files.iter().for_each(|f| {
                 if f.is_file() {
-                    dirs.push(f.get_name().clone().into_string().unwrap());
+                    files.push(f.get_name().clone().into_string().unwrap());
                 }
             });
-            dirs
+            files.sort();
+            files
         }
 
         pub fn get_file_paths(&self) -> Vec<PathBuf> {
