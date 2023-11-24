@@ -42,11 +42,11 @@ pub mod directory_mod {
             &self.files
         }
 
-        pub fn get_file_names(&self) -> Vec<OsString> {
-            let file_names: Vec<OsString> = self
+        pub fn get_file_names(&self) -> Vec<String> {
+            let file_names: Vec<String> = self
                 .files
                 .iter()
-                .map(|file| file.get_name().clone())
+                .map(|file| file.get_name().clone().into_string().unwrap())
                 .collect();
 
             file_names

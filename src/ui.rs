@@ -2,6 +2,7 @@ use std::io::stderr;
 
 use ratatui::{backend::CrosstermBackend, Terminal};
 
+mod common;
 mod startup_view;
 use crate::app::app_mod::{App, States, TerminalType};
 use anyhow::Result;
