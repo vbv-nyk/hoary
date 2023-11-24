@@ -16,13 +16,12 @@ pub mod directory_mod {
         name: String,
         files: Vec<File>,
     }
-
+    // As any other widget, a Table can be wrapped in a Block.
     impl Directory {
         pub fn new(path: Option<&str>, _position: usize) -> Directory {
             let fnds = load_directories(path.unwrap_or("."));
             let path = Path::new(path.unwrap());
             let mut path = path.canonicalize().unwrap();
-            path.pop();
             let path = path
                 .file_name()
                 .unwrap()

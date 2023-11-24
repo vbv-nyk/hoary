@@ -9,7 +9,7 @@ use ratatui::{
     widgets::{Block, Borders},
 };
 
-use super::common::{directory_tabs, ds_list_view, fnds_list_view, fs_list_view};
+use super::common::{directory_tabs, fnds_table};
 
 pub fn startup_view(terminal: &mut TerminalType, app: &App) -> Result<()> {
     terminal.draw(|frame| {
@@ -25,9 +25,14 @@ pub fn startup_view(terminal: &mut TerminalType, app: &App) -> Result<()> {
         let tabs = directory_tabs(app)
             .divider("|")
             .block(Block::default().borders(Borders::ALL));
-        let fnds = fnds_list_view(app)
+        let fnds = fnds_table(app)
             .block(Block::default().borders(Borders::ALL))
-            .style(Style::default().add_modifier(Modifier::BOLD));
+            .widths(&[
+                Constraint::Percentage(25),
+                Constraint::Percentage(25),
+                Constraint::Percentage(25),
+                Constraint::Percentage(25),
+            ]);
 
         frame.render_widget(tabs, layout[0]);
         frame.render_widget(fnds, layout[1]);
