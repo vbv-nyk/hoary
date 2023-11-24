@@ -1,6 +1,6 @@
-use std::io::stderr;
 
-use ratatui::{backend::CrosstermBackend, Terminal};
+
+
 
 mod common;
 mod startup_view;
@@ -13,7 +13,7 @@ pub fn render(app: &mut App, terminal: &mut TerminalType) -> Result<()> {
     let state = app.get_state();
 
     match state {
-        States::NORMAL(active_tab) => startup_view(terminal, app),
+        States::NORMAL(_active_tab) => startup_view(terminal, app),
     }?;
     Ok(())
 }

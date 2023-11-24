@@ -3,15 +3,15 @@ pub mod directory;
 pub mod app_mod {
     pub type TerminalType = Terminal<CrosstermBackend<Stdout>>;
 
-    use std::io::{stderr, stdout, Stderr, Stdout};
+    use std::io::{stdout, Stdout};
 
     use crossterm::{
         event::{DisableMouseCapture, EnableMouseCapture},
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     };
-    use ratatui::{backend::CrosstermBackend, symbols::line::NORMAL, Terminal};
+    use ratatui::{backend::CrosstermBackend, Terminal};
 
-    use super::directory::{self, directory_mod::Directory};
+    use super::directory::directory_mod::Directory;
     use anyhow::Result;
 
     pub enum States {
@@ -32,11 +32,11 @@ pub mod app_mod {
             }
         }
 
-        pub fn start(&self) -> Result<(TerminalType)> {
+        pub fn start(&self) -> Result<TerminalType> {
             enable_raw_mode()?;
             crossterm::execute!(stdout(), EnterAlternateScreen, EnableMouseCapture)?;
-            let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
-            Ok((terminal))
+            let terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
+            Ok(terminal)
         }
 
         pub fn end(&self) -> Result<()> {
@@ -50,7 +50,7 @@ pub mod app_mod {
         }
 
         pub fn new_directory(&mut self, path: &str) -> &mut Directory {
-            let directory = Directory::new(Some("."), self.directories.len() - 1);
+            let directory = Directory::new(Some(path), self.directories.len() - 1);
             self.directories.push(directory);
             self.directories.last_mut().unwrap()
         }

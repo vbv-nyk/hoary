@@ -6,7 +6,8 @@ pub mod directory_mod {
         ffi::OsString,
         fs::{self, DirEntry},
         io::Error,
-        path::PathBuf,
+        path::{Path, PathBuf},
+        vec,
     };
 
     use super::file::file_mod::File;
@@ -17,23 +18,22 @@ pub mod directory_mod {
     }
 
     impl Directory {
-        pub fn new(path: Option<&str>, position: usize) -> Directory {
-            let current_directory = load_directories(path.unwrap_or("."));
-            let mut current_directory_name = current_dir().unwrap();
-            current_directory_name.pop();
-            let current_directory_name = current_directory_name.file_name().unwrap().to_os_string();
-
-            match current_directory {
-                Ok(fnds) => {
-                    return Directory {
-                        name: current_directory_name.into_string().unwrap(),
-                        files: load_files(&fnds),
-                    }
-                }
-                Err(e) => panic!("Couldn't open the files and the directories because {e}"),
+        pub fn new(path: Option<&str>, _position: usize) -> Directory {
+            let fnds = load_directories(path.unwrap_or("."));
+            let path = Path::new(path.unwrap());
+            let mut path = path.canonicalize().unwrap();
+            path.pop();
+            let path = path
+                .file_name()
+                .unwrap()
+                .to_os_string()
+                .into_string()
+                .unwrap();
+            return Directory {
+                name: path,
+                files: load_files(&fnds.unwrap()),
             };
         }
-
         pub fn get_directory_name(&self) -> &String {
             &self.name
         }
@@ -50,6 +50,26 @@ pub mod directory_mod {
                 .collect();
 
             file_names
+        }
+
+        pub fn get_only_dirs(&self) -> Vec<String> {
+            let mut dirs = vec![];
+            self.files.iter().for_each(|f| {
+                if f.is_dir() {
+                    dirs.push(f.get_name().clone().into_string().unwrap());
+                }
+            });
+            dirs
+        }
+
+        pub fn get_only_files(&self) -> Vec<String> {
+            let mut dirs = vec![];
+            self.files.iter().for_each(|f| {
+                if f.is_file() {
+                    dirs.push(f.get_name().clone().into_string().unwrap());
+                }
+            });
+            dirs
         }
 
         pub fn get_file_paths(&self) -> Vec<PathBuf> {

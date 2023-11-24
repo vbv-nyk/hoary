@@ -20,9 +20,9 @@ pub mod file_mod {
         is_symlink: bool,
         length: u64,
         permissions: Permissions,
-        modified: SystemTime,
-        accessed: SystemTime,
-        created: SystemTime,
+        modified: Option<SystemTime>,
+        accessed: Option<SystemTime>,
+        created: Option<SystemTime>,
     }
 
     impl File {
@@ -36,9 +36,24 @@ pub mod file_mod {
             let is_symlink = f.metadata().unwrap().is_symlink();
             let length = f.metadata().unwrap().len();
             let permissions = f.metadata().unwrap().permissions();
-            let modified = f.metadata().unwrap().modified().unwrap();
-            let accessed = f.metadata().unwrap().accessed().unwrap();
-            let created = f.metadata().unwrap().created().unwrap();
+            let modified = f.metadata().unwrap().modified();
+            let accessed = f.metadata().unwrap().accessed();
+            let created = f.metadata().unwrap().created();
+
+            let modified: Option<SystemTime> = match modified {
+                Ok(system_time) => Some(system_time),
+                Err(e) => None,
+            };
+
+            let created: Option<SystemTime> = match created {
+                Ok(system_time) => Some(system_time),
+                Err(e) => None,
+            };
+
+            let accessed: Option<SystemTime> = match accessed {
+                Ok(system_time) => Some(system_time),
+                Err(e) => None,
+            };
 
             File {
                 name,
@@ -75,14 +90,14 @@ pub mod file_mod {
         }
 
         fn set_accessed(&mut self, system_time: SystemTime) {
-            self.accessed = system_time
+            self.accessed = Some(system_time)
         }
         fn set_created(&mut self, system_time: SystemTime) {
-            self.created = system_time
+            self.created = Some(system_time)
         }
 
         fn set_modified(&mut self, system_time: SystemTime) {
-            self.modified = system_time
+            self.modified = Some(system_time)
         }
 
         fn set_permissions(&mut self, permissions: Permissions) {
@@ -137,15 +152,15 @@ pub mod file_mod {
             &self.permissions
         }
 
-        pub fn get_modified_time(&self) -> &SystemTime {
+        pub fn get_modified_time(&self) -> &Option<SystemTime> {
             &self.modified
         }
 
-        pub fn get_accessed_time(&self) -> &SystemTime {
+        pub fn get_accessed_time(&self) -> &Option<SystemTime> {
             &self.accessed
         }
 
-        pub fn get_created_time(&self) -> &SystemTime {
+        pub fn get_created_time(&self) -> &Option<SystemTime> {
             &self.created
         }
 
