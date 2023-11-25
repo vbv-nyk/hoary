@@ -1,7 +1,3 @@
-
-
-
-
 mod common;
 mod startup_view;
 use crate::app::app_mod::{App, States, TerminalType};

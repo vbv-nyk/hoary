@@ -10,8 +10,13 @@ pub mod directory_mod {
         vec,
     };
 
+    use ratatui::widgets::TableState;
+
     use super::file::file_mod::File;
 
+    enum DirectoryStatus {
+        SELECTED(usize),
+    }
     pub struct Directory {
         name: String,
         files: Vec<File>,

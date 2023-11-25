@@ -13,11 +13,7 @@ use crate::app::app_mod::States;
 pub fn directory_tabs(app: &App) -> Tabs<'_> {
     let mut tabs: Tabs<'_> = Tabs::new(vec![""]);
     if let States::NORMAL(index) = app.get_state() {
-        let directories: Vec<String> = app
-            .get_directories()
-            .iter()
-            .map(|f| f.get_directory_name().clone())
-            .collect();
+        let directories: Vec<String> = app.get_open_directories();
         tabs = Tabs::new(directories)
             .select(usize::try_from(*index).unwrap())
             .highlight_style(
@@ -33,13 +29,9 @@ pub fn ds_list_view(app: &App) -> List<'_> {
     let mut fnds: Vec<ListItem> = vec![];
     if let States::NORMAL(tab) = app.get_state() {
         let index = usize::try_from(*tab).unwrap();
-        let current_directory = app.get_directories().get(index).unwrap();
-        let dirs = current_directory.get_only_dirs();
-        // let files = current_directory.get_only_files();
+        let dirs = app.get_directories_at_tab();
         let dirs: Vec<ListItem> = dirs.iter().map(|f| ListItem::new(f.clone())).collect();
-        // let files: Vec<ListItem> = files.iter().map(|f| ListItem::new(f.clone())).collect();
         fnds.extend(dirs);
-        // fnds.extend(files);
     }
     let fnds = List::new(fnds);
     fnds
@@ -49,12 +41,8 @@ pub fn fs_list_view(app: &App) -> List<'_> {
     let mut fnds: Vec<ListItem> = vec![];
     if let States::NORMAL(tab) = app.get_state() {
         let index = usize::try_from(*tab).unwrap();
-        let current_directory = app.get_directories().get(index).unwrap();
-        // let dirs = current_directory.get_only_dirs();
-        let files = current_directory.get_only_files();
-        // let dirs: Vec<ListItem> = dirs.iter().map(|f| ListItem::new(f.clone())).collect();
+        let files = app.get_files_at_tab();
         let files: Vec<ListItem> = files.iter().map(|f| ListItem::new(f.clone())).collect();
-        // fnds.extend(dirs);
         fnds.extend(files);
     }
     let fnds = List::new(fnds);
@@ -65,9 +53,8 @@ pub fn fnds_list_view(app: &App) -> List<'_> {
     let mut fnds: Vec<ListItem> = vec![];
     if let States::NORMAL(tab) = app.get_state() {
         let index = usize::try_from(*tab).unwrap();
-        let current_directory = app.get_directories().get(index).unwrap();
-        let dirs = current_directory.get_only_dirs();
-        let files = current_directory.get_only_files();
+        let dirs = app.get_directories_at_tab();
+        let files = app.get_files_at_tab();
         let dirs: Vec<ListItem> = dirs
             .iter()
             .map(|f| {
@@ -86,9 +73,8 @@ pub fn fnds_table(app: &App) -> Table<'_> {
     let mut fnds: Vec<Row> = vec![];
     if let States::NORMAL(tab) = app.get_state() {
         let index: usize = usize::try_from(*tab).unwrap();
-        let current_directory = app.get_directories().get(index).unwrap();
-        let dirs: Vec<String> = current_directory.get_only_dirs();
-        let files: Vec<String> = current_directory.get_only_files();
+        let dirs: Vec<String> = app.get_directories_at_tab();
+        let files: Vec<String> = app.get_files_at_tab();
         let dirs: Vec<Cell> = dirs
             .iter()
             .map(|f| {
@@ -101,10 +87,16 @@ pub fn fnds_table(app: &App) -> Table<'_> {
             .iter()
             .map(|f: &String| Cell::from(f.clone()))
             .collect();
-        fnds.push(Row::new(dirs).style(Style::default().fg(Color::White)));
+        fnds.push(
+            Row::new(dirs)
+                .set_style(Style::default())
+                .style(Style::default().fg(Color::White)),
+        );
         fnds.push(Row::new(files));
     }
-    let table = Table::new(fnds);
+    let table = Table::new(fnds)
+        .highlight_style(Style::default().bg(Color::Black))
+        .highlight_spacing(HighlightSpacing::Never);
 
     table
 }
