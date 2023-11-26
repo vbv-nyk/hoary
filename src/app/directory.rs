@@ -10,20 +10,22 @@ pub mod directory_mod {
         vec,
     };
 
-    use ratatui::widgets::TableState;
+    use dioxus::core_macro::Props;
 
     use super::file::file_mod::File;
 
     enum DirectoryStatus {
         SELECTED(usize),
     }
+
+    #[derive(PartialEq, Props, Debug, Clone)]
     pub struct Directory {
         name: String,
         files: Vec<File>,
     }
     // As any other widget, a Table can be wrapped in a Block.
     impl Directory {
-        pub fn new(path: Option<&str>, _position: usize) -> Directory {
+        pub fn new(path: Option<&str>) -> Directory {
             let fnds = load_directories(path.unwrap_or("."));
             let path = Path::new(path.unwrap());
             let mut path = path.canonicalize().unwrap();
@@ -56,25 +58,25 @@ pub mod directory_mod {
             file_names
         }
 
-        pub fn get_only_dirs(&self) -> Vec<String> {
+        pub fn get_only_dirs(&self) -> Vec<&File> {
             let mut dirs = vec![];
             self.files.iter().for_each(|f| {
                 if f.is_dir() {
-                    dirs.push(f.get_name().clone().into_string().unwrap());
+                    dirs.push(f);
                 }
             });
-            dirs.sort();
+            // dirs.sort();
             dirs
         }
 
-        pub fn get_only_files(&self) -> Vec<String> {
+        pub fn get_only_files(&self) -> Vec<&File> {
             let mut files = vec![];
             self.files.iter().for_each(|f| {
-                if f.is_file() {
-                    files.push(f.get_name().clone().into_string().unwrap());
+                if f.is_file() && !f.is_dir() {
+                    files.push(f);
                 }
             });
-            files.sort();
+            // files.sort();
             files
         }
 

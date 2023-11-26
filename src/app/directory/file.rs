@@ -6,11 +6,14 @@ pub mod file_mod {
         time::SystemTime,
     };
 
+    use dioxus::core_macro::Props;
+
     pub enum OpenOperation<'a> {
         FILEOPEN,
         DIROPEN(&'a PathBuf),
     }
 
+    #[derive(PartialEq, Props, Debug, Clone)]
     pub struct File {
         name: OsString,
         path: PathBuf,
@@ -166,9 +169,14 @@ pub mod file_mod {
 
         pub fn open(&self) -> OpenOperation {
             if self.is_file() {
+                // match opener::open(self.get_path()) {
+                //     Ok(()) => println!("Successfully opened"),
+                //     Err(e) => println!("Couldn't open because {e}"),
+                // }
                 opener::open(self.get_path());
                 OpenOperation::FILEOPEN
             } else {
+                // print!("{:?} is a directory", self.name);
                 OpenOperation::DIROPEN(self.get_path())
             }
         }

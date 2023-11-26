@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.75"
-crossterm = "0.27.0"
+dioxus = "0.4.0"
+dioxus-tui = "0.4.0"
 opener = "0.6.1"
-ratatui = "0.24.0"
